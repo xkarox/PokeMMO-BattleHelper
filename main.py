@@ -9,7 +9,7 @@ def main():
     # print(list)
     util = Util()
     # hwnd = util.find_window()
-    util.capture_screen(True, True)
+    util.capture_screen(True, True, False)
     
 
 if __name__ == '__main__':
