@@ -27,9 +27,10 @@ class Util():
         invert = 255 - opening
         
         # Perform text extraction
-        data = pytesseract.image_to_string(invert, config='--psm 6')
-        print(data)
+        # data = pytesseract.image_to_string(invert, config='--psm 6')
+        # print(data)
         
+        data = pytesseract.image_to_data(invert, config='--psm 6')
         # cv2.imshow('thresh', thresh)
         # cv2.imshow('opening', opening)
         # cv2.imshow('invert', invert)
@@ -70,8 +71,15 @@ class Util():
             self.set_bounding_box()
             sct_img = self.sct.grab(self.bounding_box)
             img = np.array(sct_img)
-            data, contours = self.process_image(sct_img)
+            data= self.process_image(sct_img)
             
+            #https://www.youtube.com/watch?v=2P7Kdz02_oc
+            # for i, d in enumerate(data.splitlines()):
+            #     if (i != 0):
+            #         r = d.split()
+            #         if len(r) == 12:
+            #             print(r[11])
+        
             if showFps: 
                 frames += 1
                 fps = frames / (time.time() - begin_time)
@@ -86,4 +94,6 @@ class Util():
                 cv2.destroyAllWindows()
                 break
             
+    def contains_image_template( self, template, image ):
+        pass
             
