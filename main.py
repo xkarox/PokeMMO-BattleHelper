@@ -16,7 +16,7 @@ def main():
     
     # print(db.get_pokemon_types(gastly))
     
-    gds.capture_screen(showWindow = True)
+    gds.capture_screen()
     
 
 if __name__ == '__main__':

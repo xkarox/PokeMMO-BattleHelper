@@ -3,12 +3,14 @@ import numpy as np
 import cv2
 import pytesseract
 from mss import mss
+import re
 
 class game_data_service():
     def __init__( self ):
         self.window_handle = 0
         self.bounding_box = {}
         self.sct = mss()
+        self.pattern = r"(\w+)\s+Lv\.\s+(\d+)"
         pytesseract.pytesseract.tesseract_cmd = 'F:\\Tesseract\\tesseract.exe'
     
     def find_window( self ):
@@ -54,12 +56,24 @@ class game_data_service():
         # cv2.imshow('opening', opening)
         # cv2.imshow('invert', invert)
         
-        print(data)
+        # print(data)
         return data
-                    
+    
+    def find_pokemon_names( self, data: str):
+        found_pokemon = []
+        #change pattern to also find pokemon with sex
+        matches = re.findall( self.pattern, data )
+        
+        if matches:
+            for match in matches:
+                pokemon_name = match[0]
+                pokemon_level = match[1]
+                
+                found_pokemon.append(pokemon_name)
+        # print(found_pokemon)    
+        return found_pokemon    
+                        
     def capture_screen( self, showWindow: bool = False):
-        # begin_time = time.time()
-        # frames = 0
         
         while True:
             #Find the window and its bounding box 
@@ -70,6 +84,8 @@ class game_data_service():
             sct_img = self.sct.grab(self.bounding_box)
             img = np.array(sct_img)
             data = self.process_image(img)
+            self.find_pokemon_names(data)
+            
             
             #if showWindow is set to True a window showing the screenshots open
             if showWindow:
