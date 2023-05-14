@@ -1,21 +1,34 @@
-import pokebase as pb
-
+from collections.abc import MutableMapping
+import pokepy 
 import json
 
 
 
 class Database_service():
 
-    def __init__():
-        pass
+    def __init__(self):
+        self.client = pokepy.V2Client()
     
+    def get_pokemon( self, pokemon_name: str ):
 
-    def get_pokemon_types(pokemon_name: str):
-        pokemon = pb.pokemon(pokemon_name)
+        try:
+            pokemon = self.client.get_pokemon( pokemon_name.lower() )
+        except:
+            print('[ERROR] Could not get pokemon from api')
+            
+        return pokemon
         
+        
+    def get_pokemon_types( self, pokemon ):
         pokemon_types = []
-        for element in pokemon.types:
-            pokemon_types.append(element.type.name)
         
-        return pokemon_types
+        try:
+            for types in pokemon[0].types:
+                print(types.type.name)
+                pokemon_types.append(types.type.name)
+        except:
+            print('[ERROR] Could not get pokemon types')
     
+        return pokemon_types
+
+        
