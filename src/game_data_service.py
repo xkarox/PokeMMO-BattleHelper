@@ -21,6 +21,7 @@ class game_data_service():
                 if 'pokemmo' == window_text or 'pokеммo' == window_text or 'рokemмo' == window_text or 'pokeмmo' == window_text:
                     # print ( hex( hwnd ), window_text )
                     self.window_handle = hwnd
+                    
         win32gui.EnumWindows( winEnumHandler, None )
         
         return self.window_handle
@@ -49,8 +50,7 @@ class game_data_service():
         
         # Perform text extraction
         data = pytesseract.image_to_string(invert, config='--psm 6')
-        # print(data)
-        
+
         return data
     
     def find_pokemon_names( self, data: str):
@@ -66,8 +66,7 @@ class game_data_service():
                 found_pokemon.append(pokemon_name)
                 
         return found_pokemon    
-        
-                   
+                    
     def capture_screen( self, window_handle: int, showWindow: bool = False):
         #Find the bounding box 
         self.find_bounding_box( window_handle )
