@@ -27,7 +27,7 @@ class game_data_service():
     
     def find_bounding_box( self, window_handle: int):
 
-        window_rect = win32gui.GetWindowRect( window_handle )
+        window_rect = win32gui.GetWindowRect( self.window_handle )
         
         window_width = abs(window_rect[0]) - abs(window_rect[2])
         window_height = abs(window_rect[3]) - abs(window_rect[1])
@@ -40,8 +40,7 @@ class game_data_service():
     def process_image( self, image: np.array ):
         # Grayscale, Gaussian blur, Otsu's threshold
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        blur = cv2.GaussianBlur(gray, (3,3), 0)
-        thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+        thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 
         # Morph open to remove noise and invert image
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
@@ -50,13 +49,8 @@ class game_data_service():
         
         # Perform text extraction
         data = pytesseract.image_to_string(invert, config='--psm 6')
-        # data = pytesseract.image_to_data(invert, config='--psm 6')
-        
-        # cv2.imshow('thresh', thresh)
-        # cv2.imshow('opening', opening)
-        # cv2.imshow('invert', invert)
-        
         # print(data)
+        
         return data
     
     def find_pokemon_names( self, data: str):
@@ -70,28 +64,22 @@ class game_data_service():
                 pokemon_level = match[1]
                 
                 found_pokemon.append(pokemon_name)
-        # print(found_pokemon)    
+                
         return found_pokemon    
-                        
-    def capture_screen( self, showWindow: bool = False):
         
-        while True:
-            #Find the window and its bounding box 
-            window_handle = self.find_window()
-            self.find_bounding_box( window_handle )
+                   
+    def capture_screen( self, window_handle: int, showWindow: bool = False):
+        #Find the bounding box 
+        self.find_bounding_box( window_handle )
+        
+        #take a screenshot of the window and process the image
+        sct_img = self.sct.grab(self.bounding_box)
+        img = np.array(sct_img)
+        
+        #if showWindow is set to True a window showing the screenshots open
+        if showWindow:
+            cv2.imshow('screen', img)
+        
+        return img
+        
             
-            #take a screenshot of the window and process the image
-            sct_img = self.sct.grab(self.bounding_box)
-            img = np.array(sct_img)
-            data = self.process_image(img)
-            self.find_pokemon_names(data)
-            
-            
-            #if showWindow is set to True a window showing the screenshots open
-            if showWindow:
-                cv2.imshow('screen', img)
-            
-            #close the window when pressing 'q'      
-            if (cv2.waitKey(1) & 0xFF) == ord('q'):
-                cv2.destroyAllWindows()
-                break
