@@ -72,7 +72,7 @@ async def gameDataThread(server):
         data = gds.process_image(img)
         found_pokemon = gds.find_pokemon_names(data)
         
-        print(f'Found pokemon: {len(found_pokemon)}')
+        print(f'Found pokemon: {len(found_pokemon)}, {found_pokemon}')
         
         if len(found_pokemon) != 0:
             
