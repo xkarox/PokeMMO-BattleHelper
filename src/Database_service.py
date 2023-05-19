@@ -34,5 +34,33 @@ class Database_service():
     def get_damage_relations( self, type ):
         damage_relations = self.client.get_type(type)[0].damage_relations
         
+        # dd_relation = damage_relations.double_damage_from
+        double_damage_from = []
+        for rel in damage_relations.double_damage_from:
+            double_damage_from.append(rel.name)
+            
+        # hd_relation = damage_relations.half_damage_from
+        half_damage_from = []
+        for rel in damage_relations.half_damage_from:
+            half_damage_from.append(rel.name)
+        
+        # nd_relation = damage_relations.no_damage_from
+        no_damage_from = []
+        for rel in  damage_relations.no_damage_from:
+            no_damage_from.append(rel.name)
+        
+        damage_relations = {}
+        damage_relations["type"] = type
+        damage_relations["double_damage_from"] = double_damage_from
+        damage_relations["half_damage_from"] = half_damage_from
+        damage_relations["no_damage_from"] = no_damage_from
+        
         return damage_relations
         
+    def get_pokemon_stats( self, db_pokemon ):
+        stats = []
+        
+        for stat in db_pokemon.stats:
+            stats.append({stat.stat.name: stat.base_stat})
+            
+        return stats

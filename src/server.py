@@ -4,12 +4,10 @@ import websockets
 from websockets import WebSocketServerProtocol
 import time
 import threading
-
-
-
+import json
+from datetime import datetime
 from src.Database_service import Database_service
 from src.game_data_service import game_data_service
-import keyboard
 import threading
 
 
@@ -63,7 +61,6 @@ def between_callback(server):
     loop.close()
 
 async def gameDataThread(server):
-    colorama_init(server)
         
     gds = game_data_service()
     db = Database_service()
@@ -79,11 +76,30 @@ async def gameDataThread(server):
         print(f'Found pokemon: {len(found_pokemon)}')
         
         if len(found_pokemon) != 0:
+            
             #iterate through all pokemon found on screen
             for pokemon in found_pokemon:
 
                 db_pokemon = db.get_pokemon(pokemon)
+                
                 types = db.get_pokemon_types(db_pokemon)
-        
-                await checkAndSend(server, db_pokemon)
-                time.sleep(2)
+                
+                stats = db.get_pokemon_stats(db_pokemon)
+                # damage_relations = db.get_damage_relations(type)
+                damage_relations = {}
+                for type in types:
+                    damage_relations[type] = db.get_damage_relations(type)
+                
+                sprite = db_pokemon.sprites.front_default
+                
+                data =  {}
+                data['name'] = pokemon
+                data['type'] = types
+                data['stats'] = stats
+                data['damage-relations'] = damage_relations
+                data['sprite'] = sprite
+                data['timestamp'] = datetime.now().strftime("%H:%M:%S")
+                data_string = json.dumps(data)
+                
+                await checkAndSend(server, data_string)
+            time.sleep(2)
