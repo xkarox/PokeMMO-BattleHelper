@@ -87,8 +87,10 @@ async def gameDataThread(server):
                     stats = db.get_pokemon_stats(db_pokemon)
                     # damage_relations = db.get_damage_relations(type)
                     damage_relations = {}
+                    index = 0
                     for type in types:
-                        damage_relations[type] = db.get_damage_relations(type)
+                        damage_relations[index] = db.get_damage_relations(type)
+                        index += 1
                     
                     sprite = db_pokemon.sprites.front_default
                     
