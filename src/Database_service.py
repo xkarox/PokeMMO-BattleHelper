@@ -12,7 +12,7 @@ class Database_service():
     def get_pokemon( self, pokemon_name: str ):
 
         try:
-            pokemon = self.client.get_pokemon( pokemon_name.lower() )
+            pokemon = self.client.get_pokemon( pokemon_name.lower() )[0]
         except:
             print('[ERROR] Could not get pokemon from api')
             
@@ -23,12 +23,16 @@ class Database_service():
         pokemon_types = []
         
         try:
-            for types in pokemon[0].types:
-                print(types.type.name)
+            for types in pokemon.types:
+                # print(types.type.name)
                 pokemon_types.append(types.type.name)
         except:
             print('[ERROR] Could not get pokemon types')
     
         return pokemon_types
 
+    def get_damage_relations( self, type ):
+        damage_relations = self.client.get_type(type)[0].damage_relations
+        
+        return damage_relations
         
