@@ -47,11 +47,8 @@ class Server:
             await self.send_to_clients(message)
 
 
-async def checkAndSend(server, types):
-    # check something
-    # send message
-    logging.info("in check and send")
-    await server.send_to_clients(types)
+async def checkAndSend(server, data):
+    await server.send_to_clients(data)
 
 # helper routine to allow thread to call async function
 def between_callback(server):
@@ -61,6 +58,8 @@ def between_callback(server):
     loop.close()
 
 async def gameDataThread(server):
+    
+    pokemon_temp = []
         
     gds = game_data_service()
     db = Database_service()
@@ -77,29 +76,32 @@ async def gameDataThread(server):
         
         if len(found_pokemon) != 0:
             
-            #iterate through all pokemon found on screen
-            for pokemon in found_pokemon:
-
-                db_pokemon = db.get_pokemon(pokemon)
+            if (pokemon_temp != found_pokemon):
+                #iterate through all pokemon found on screen
+                for pokemon in found_pokemon:
                 
-                types = db.get_pokemon_types(db_pokemon)
-                
-                stats = db.get_pokemon_stats(db_pokemon)
-                # damage_relations = db.get_damage_relations(type)
-                damage_relations = {}
-                for type in types:
-                    damage_relations[type] = db.get_damage_relations(type)
-                
-                sprite = db_pokemon.sprites.front_default
-                
-                data =  {}
-                data['name'] = pokemon
-                data['type'] = types
-                data['stats'] = stats
-                data['damage-relations'] = damage_relations
-                data['sprite'] = sprite
-                data['timestamp'] = datetime.now().strftime("%H:%M:%S")
-                data_string = json.dumps(data)
-                
-                await checkAndSend(server, data_string)
-            time.sleep(2)
+                    db_pokemon = db.get_pokemon(pokemon)
+                    
+                    types = db.get_pokemon_types(db_pokemon)
+                    
+                    stats = db.get_pokemon_stats(db_pokemon)
+                    # damage_relations = db.get_damage_relations(type)
+                    damage_relations = {}
+                    for type in types:
+                        damage_relations[type] = db.get_damage_relations(type)
+                    
+                    sprite = db_pokemon.sprites.front_default
+                    
+                    data =  {}
+                    data['name'] = pokemon
+                    data['type'] = types
+                    data['stats'] = stats
+                    data['damage-relations'] = damage_relations
+                    data['sprite'] = sprite
+                    data['timestamp'] = datetime.now().strftime("%H:%M:%S")
+                    data_string = json.dumps(data)
+                    
+                    await checkAndSend(server, data_string)
+                    
+                    pokemon_temp = found_pokemon
+                time.sleep(2)

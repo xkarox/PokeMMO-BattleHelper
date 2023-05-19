@@ -11,12 +11,13 @@ class Database_service():
     
     def get_pokemon( self, pokemon_name: str ):
 
-        try:
-            pokemon = self.client.get_pokemon( pokemon_name.lower() )[0]
-        except:
-            print('[ERROR] Could not get pokemon from api')
-            
+        # try:
+        pokemon = self.client.get_pokemon( pokemon_name.lower() )[0]
         return pokemon
+        # except:
+        #     print('[ERROR] Could not get pokemon from api')
+            
+        
         
         
     def get_pokemon_types( self, pokemon ):
